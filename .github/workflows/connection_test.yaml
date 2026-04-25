@@ -11,14 +11,14 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install dependencies
-        if: ${{ !env.ACT }}
+        if: ${{ env.ACT }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: squeezelite libasound2 libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
       - name: Install dependencies (ACT fallback)
-        if: ${{ env.ACT }}
+        if: ${{ !env.ACT }}
         run: |
           sudo apt-get update
           sudo apt-get install -y squeezelite libasound2 libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
