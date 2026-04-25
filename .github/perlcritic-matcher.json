@@ -4,7 +4,7 @@
       "owner": "perlcritic",
       "pattern": [
         {
-          "regexp": "^(.+) at line (\\d+), column (\\d+)\\.\\s+(.+)$",
+          "regexp": "^([^:]+):(\\d+):(\\d+):(.+)$",
           "file": 1,
           "line": 2,
           "column": 3,
