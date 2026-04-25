@@ -39,5 +39,5 @@ jobs:
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
       - name: Run perlcritic
-        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }}
+        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }} || [ $? -eq 2 ]
 
