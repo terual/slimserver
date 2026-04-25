@@ -14,8 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0 # Get all history to create a diff later
           
       - name: Install dependencies
         if: ${{ !env.ACT }}
@@ -27,17 +25,18 @@ jobs:
       - name: Get changed files
         id: files
         run: |
-          # Haal de doel-branch op (meestal main of master)
-          git fetch origin ${{ github.base_ref }}
+          # Haal alleen de uiterste punt van de doel-branch op, niet de hele historie
+          git fetch origin ${{ github.base_ref }} --depth=1
           
-          # Vergelijk de huidige commit met de basis van de PR
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(pm|pl)$' | xargs)
+          # Vergelijk de huidige commit met de doel-branch
+          # We gebruiken 'origin/${{ github.base_ref }}' omdat we die net hebben gefetched
+          CHANGED=$(git diff --name-only FETCH_HEAD...HEAD | grep -E '\.(pm|pl)$' | xargs || true)
           
-          echo "changed_files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
           
       - name: Register problem matcher
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
       - name: Run perlcritic
-        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }} || [ $? -eq 2 ]
+        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.files }} || [ $? -eq 2 ]
 
