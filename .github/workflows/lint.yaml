@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   linux:
-    name: Run LMS to see whether it crashes immediately...
+    name: Running lint on Slim/ folder...
     runs-on: ubuntu-24.04
 
     steps:
@@ -17,4 +17,5 @@ jobs:
           version: 1
 
       - name: Lint Slim/
-        run: perlcritic Slim/
+        run: perlcritic --severity 4 --verbose 8 Slim/
+
