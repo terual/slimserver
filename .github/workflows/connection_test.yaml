@@ -28,8 +28,11 @@ jobs:
           # Start server met een tijdelijke prefs file
           perl slimserver.pl --daemon --prefssuffix _test --httpport 9000 --cliport 9090 &
           # Wacht tot de server up is
-          until curl -s http://localhost:9000; do sleep 2; done
-
+          until curl -s -o /dev/null http://localhost:9000; do 
+            echo "Waiting for LMS to start..."
+            sleep 2
+          done
+          
       - name: Start Squeezelite Player
         run: |
           # Start een virtuele speler en verbind met de lokale server
