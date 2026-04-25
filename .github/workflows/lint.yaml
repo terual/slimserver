@@ -1,6 +1,12 @@
 name: 'Lint perl'
 on:
   workflow_dispatch:
+  pull_request:
+
+permissions:
+  checks: write
+  contents: read    # Best practice: explicit add 'read' when adding other rights
+
 jobs:
   linux:
     name: Running lint on Slim/ folder...
@@ -16,6 +22,10 @@ jobs:
           packages: libperl-critic-perl libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
+      - name: Register Problem Matcher
+        run: echo "::add-matcher::.github/perlcritic-matcher.json"
+
       - name: Lint Slim/
-        run: perlcritic --severity 4 --verbose 8 Slim/
+        # --verbose 1 ensures the output is in the "file at line X, column Y" format
+        run: perlcritic --severity 4 --verbose 1 Slim/
 
