@@ -33,11 +33,11 @@ jobs:
             sleep 2
           done
           
-      - name: Start Squeezelite Player
+      - name: Start Squeezelite (Headless/Virtual Audio)
         run: |
-          # Start een virtuele speler en verbind met de lokale server
-          # -n: naam, -m: fake mac adres voor herkenning, -s: server ip
-          squeezelite -n "TestPlayer" -m 00:11:22:33:44:55 -s localhost &
+          # Gebruik '-o -' om audio naar stdout te sturen (voorkomt ALSA device errors)
+          # Gebruik '-z' om als daemon op de achtergrond te draaien
+          squeezelite -n "TestPlayer" -m 00:11:22:33:44:55 -s localhost -o null -z
           sleep 5
 
       - name: Verify Player Discovery via JSON-RPC
