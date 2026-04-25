@@ -49,7 +49,7 @@ jobs:
             -d '{"id":1,"method":"slim.request","params":["",["players",0,10]]}' \
             http://localhost:9000/jsonrpc.js | grep "TestPlayer"
 
-      - name: Functional Test: Play & Status
+      - name: Functional Test with Play and Status
         run: |
           # 1. Geef een play commando via de API
           curl -X POST -H "Content-Type: application/json" \
