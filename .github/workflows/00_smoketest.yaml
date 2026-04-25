@@ -1,9 +1,6 @@
 name: 'Smoketest for Lyrion Music Server'
 on:
-  push:
   workflow_dispatch:
-  pull_request_target:
-    types: [assigned, labeled]
 jobs:
   linux:
     name: Run LMS to see whether it crashes immediately...
