@@ -1,0 +1,16 @@
+{
+  "problem-matcher": [
+    {
+      "owner": "perlcritic",
+      "pattern": [
+        {
+          "regexp": "^(.+) at line (\\d+), column (\\d+)\\.\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "message": 4
+        }
+      ]
+    }
+  ]
+}
