@@ -47,18 +47,31 @@ jobs:
             -d '{"id":1,"method":"slim.request","params":["",["players",0,10]]}' \
             http://localhost:9000/jsonrpc.js | grep "TestPlayer"
 
-      - name: Functional Test with Play and Status
+      - name: Functional Test: Play Stream & Status
         run: |
-          # 1. Geef een play commando via de API
+          PLAYER_MAC="00:11:22:33:44:55"
+          # 1. Voeg een test-stream toe aan de playlist en start met spelen
+          # We gebruiken een varkens-radio of een stabiele stream URL
+          STREAM_URL="https://somafm.com/live130.pls"
+          
           curl -X POST -H "Content-Type: application/json" \
-            -d '{"id":1,"method":"slim.request","params":["00:11:22:33:44:55",["play"]]}' \
+            -d "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"$PLAYER_MAC\",[\"playlist\",\"play\",\"$STREAM_URL\"]]}" \
             http://localhost:9000/jsonrpc.js
+          
+          # Geef de server even de tijd om de stream te bufferen
+          sleep 5
           
           # 2. Verifieer status
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
-            -d '{"id":1,"method":"slim.request","params":["00:11:22:33:44:55",["status"]]}' \
+            -d "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"$PLAYER_MAC\",[\"status\"]]}" \
             http://localhost:9000/jsonrpc.js)
           
           echo "Server Response: $RESPONSE"
-          # Check of 'mode' op 'play' staat
-          echo $RESPONSE | grep '"mode":"play"'
+          
+          # Check of de 'mode' op 'play' staat
+          if echo "$RESPONSE" | grep -q '"mode":"play"'; then
+            echo "Succes: Speler is aan het streamen!"
+          else
+            echo "Fout: Speler staat niet in play-modus."
+            exit 1
+          fi
