@@ -14,7 +14,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-
+        with:
+          fetch-depth: 0 # Get all history to create a diff later
+          
       - name: Install dependencies
         if: ${{ !env.ACT }}
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -25,10 +27,15 @@ jobs:
       - name: Get changed files
         id: files
         run: |
-          # Get the changed files
-          echo "changed_files=$(git diff --name-only origin/main...HEAD | grep -E '\.(pm|pl)$' | xargs)" >> $GITHUB_OUTPUT
-
-      - name: Register problemmMatcher
+          # Haal de doel-branch op (meestal main of master)
+          git fetch origin ${{ github.base_ref }}
+          
+          # Vergelijk de huidige commit met de basis van de PR
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(pm|pl)$' | xargs)
+          
+          echo "changed_files=$CHANGED" >> $GITHUB_OUTPUT
+          
+      - name: Register problem matcher
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
       - name: Run perlcritic
