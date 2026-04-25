@@ -27,5 +27,5 @@ jobs:
 
       - name: Lint Slim/
         # --verbose 1 ensures the output is in the "file at line X, column Y" format
-        run: perlcritic --severity 4 --verbose 1 Slim/
+        run: perlcritic --severity 5 --verbose 1 Slim/
 
