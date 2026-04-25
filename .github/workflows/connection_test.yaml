@@ -1,4 +1,4 @@
-name: Lyrion Connection Test
+name: Lyrion/squeezelite connection test
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -11,38 +11,38 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install dependencies
-        if: ${{ env.ACT }}
+        if: ${{ !env.ACT }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: squeezelite libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
       - name: Install dependencies (ACT fallback)
-        if: ${{ !env.ACT }}
+        if: ${{ env.ACT }}
         run: |
           sudo apt-get update
           sudo apt-get install -y squeezelite libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
 
-      - name: Start Lyrion Music Server (Background)
+      - name: Start Lyrion Music Server
         run: |
-          # Start server met een tijdelijke prefs file
+          # Start server
           perl slimserver.pl --daemon --prefssuffix _test --httpport 9000 --cliport 9090 &
-          # Wacht tot de server up is
+          # Wait until the server is up
           until curl -s -o /dev/null http://localhost:9000; do 
             echo "Waiting for LMS to start..."
             sleep 2
           done
           
-      - name: Start Squeezelite (Headless/Virtual Audio)
+      - name: Start squeezelite (headless)
         run: |
-          # Gebruik '-o -' om audio naar stdout te sturen (voorkomt ALSA device errors)
-          # Gebruik '-z' om als daemon op de achtergrond te draaien
+          # Use '-o null' to send audio into nothing
+          # Use '-z' to run as daemon
           squeezelite -n "TestPlayer" -m 00:11:22:33:44:55 -s localhost -o null -z
           sleep 5
 
-      - name: Verify Player Discovery via JSON-RPC
+      - name: Verify player discovery via JSON-RPC
         run: |
-          # Controleer of de server de speler ziet
+          # Check if the server sees the player
           curl -X POST -H "Content-Type: application/json" \
             -d '{"id":1,"method":"slim.request","params":["",["players",0,10]]}' \
             http://localhost:9000/jsonrpc.js | grep "TestPlayer"
@@ -50,28 +50,27 @@ jobs:
       - name: Verify play stream and status
         run: |
           PLAYER_MAC="00:11:22:33:44:55"
-          # 1. Voeg een test-stream toe aan de playlist en start met spelen
-          # We gebruiken een varkens-radio of een stabiele stream URL
+          # 1. Add a test-stream to the playlist and start playing
           STREAM_URL="https://somafm.com/live130.pls"
           
           curl -X POST -H "Content-Type: application/json" \
             -d "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"$PLAYER_MAC\",[\"playlist\",\"play\",\"$STREAM_URL\"]]}" \
             http://localhost:9000/jsonrpc.js
           
-          # Geef de server even de tijd om de stream te bufferen
+          # Give the server some time to buffer the stream
           sleep 5
           
-          # 2. Verifieer status
+          # 2. Verify status
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
             -d "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"$PLAYER_MAC\",[\"status\"]]}" \
             http://localhost:9000/jsonrpc.js)
           
           echo "Server Response: $RESPONSE"
           
-          # Check of de 'mode' op 'play' staat
+          # Check if 'mode' is on 'play'
           if echo "$RESPONSE" | grep -q '"mode":"play"'; then
-            echo "Succes: Speler is aan het streamen!"
+            echo "Success: player is streaming!"
           else
-            echo "Fout: Speler staat niet in play-modus."
+            echo "Error: player is not in play-modus."
             exit 1
           fi
