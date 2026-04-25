@@ -22,10 +22,15 @@ jobs:
           packages: libperl-critic-perl libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
-      - name: Register Problem Matcher
+      - name: Get changed files
+        id: files
+        run: |
+          # Get the changed files
+          echo "changed_files=$(git diff --name-only origin/main...HEAD | grep -E '\.(pm|pl)$' | xargs)" >> $GITHUB_OUTPUT
+
+      - name: Register problemmMatcher
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
-      - name: Lint Slim/
-        # --verbose 1 ensures the output is in the "file at line X, column Y" format
-        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" Slim/ || [ $? -eq 2 ]
+      - name: Run perlcritic
+        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }}
 
