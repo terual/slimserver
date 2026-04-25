@@ -47,7 +47,7 @@ jobs:
             -d '{"id":1,"method":"slim.request","params":["",["players",0,10]]}' \
             http://localhost:9000/jsonrpc.js | grep "TestPlayer"
 
-      - name: Functional Test: Play Stream & Status
+      - name: Verify play stream and status
         run: |
           PLAYER_MAC="00:11:22:33:44:55"
           # 1. Voeg een test-stream toe aan de playlist en start met spelen
