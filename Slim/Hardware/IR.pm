@@ -485,7 +485,7 @@ sub lookup {
 
 	$client->lastirbutton($code);
 
-	return lookupFunction($client, $code);
+	return undef;
 }
 
 sub lookupFunction {
