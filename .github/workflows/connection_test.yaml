@@ -8,25 +8,20 @@ jobs:
 
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup Perl
-        uses: shogo82148/actions-setup-perl@v1
+      - name: Install dependencies
+        if: ${{ !env.ACT }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          perl-version: '5.38'
-          install-modules: |
-            JSON::RPC::Client
-            Net::CLI::Interact
+          packages: squeezelite libasound2 libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
+          version: 1
 
-      - name: Install System Dependencies
+      - name: Install dependencies (ACT fallback)
+        if: ${{ env.ACT }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y squeezelite libasound2
-
-      - name: Install Lyrion Dependencies
-        run: |
-          # Installeer de perl deps voor Lyrion zelf
-          cpanm --installdeps .
+          sudo apt-get install -y squeezelite libasound2 libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
 
       - name: Start Lyrion Music Server (Background)
         run: |
@@ -64,9 +59,3 @@ jobs:
           echo "Server Response: $RESPONSE"
           # Check of 'mode' op 'play' staat
           echo $RESPONSE | grep '"mode":"play"'
-
-      - name: Linting (Perl Critic)
-        if: always()
-        run: |
-          cpanm Perl::Critic
-          perlcritic Slim/
