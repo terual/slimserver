@@ -19,7 +19,7 @@ jobs:
         if: ${{ !env.ACT }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libperl-critic-perl libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
+          packages: libperl-critic-perl
           version: 1
 
       - name: Get changed files
@@ -31,7 +31,7 @@ jobs:
           
       - name: Run perlcritic
         run: |
-          perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
+          perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Remove problem matcher
         run: echo "::remove-matcher owner=perlcritic::"
