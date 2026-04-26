@@ -211,7 +211,7 @@ sub _slot {
 
 	$slot{$baseclass}->{$field} = $n;
 
-	return $n;
+	return undef;
 }
 
 # Find the base class excluding this package
