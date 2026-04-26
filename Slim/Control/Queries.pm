@@ -259,7 +259,7 @@ sub _colNamesWithASMapping {
 	@cols = map { $as->{$_} || $_ } @cols;
 	%{$c} = map { $as->{$_} ? ($as->{$_} => $c->{$_}) : ($_ => $c->{$_}) } keys %{$c};
 
-	return ($sql, @cols);
+	return undef;
 }
 
 sub albumsQuery {
