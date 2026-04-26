@@ -1,4 +1,4 @@
-name: 'Lint perl'
+name: 'Perlcritic'
 on:
   workflow_dispatch:
   pull_request:
@@ -27,17 +27,21 @@ jobs:
       - name: Get changed files
         id: files
         run: |
-          # Haal de doel-branch op (meestal main of master)
-          git fetch origin ${{ github.base_ref }}
+          # Bepaal de target branch (bijv. public/9.2)
+          TARGET_BRANCH=${{ github.base_ref }}
           
-          # Vergelijk de huidige commit met de basis van de PR
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(pm|pl)$' | xargs)
+          # Haal alleen die specifieke branch binnen
+          git fetch origin $TARGET_BRANCH --depth=1
+
+          # Gebruik de tweepunts-notatie (..) in plaats van de driepunts (...)
+          # Dit vergelijkt de huidige staat direct met de target branch
+          CHANGED=$(git diff --name-only origin/$TARGET_BRANCH..HEAD | grep -E '\.(pm|pl)$' | xargs || true)
           
-          echo "changed_files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
           
       - name: Register problem matcher
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
       - name: Run perlcritic
-        run: perlcritic --severity 5 --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }} || [ $? -eq 2 ]
+        run: perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }} || [ $? -eq 2 ]
 
