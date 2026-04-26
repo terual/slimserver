@@ -80,7 +80,7 @@ sub _dns_ok {
 		return;
 	}
 
-	return $self->connect( $args );
+	return undef;
 }
 
 sub _dns_error {
