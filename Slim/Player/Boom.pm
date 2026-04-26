@@ -99,7 +99,7 @@ sub new {
 
 	my $client = $class->SUPER::new(@_);
 
-	return $client;
+	return undef;
 }
 
 sub welcomeScreen {
