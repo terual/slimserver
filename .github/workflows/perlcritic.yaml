@@ -1,5 +1,5 @@
 name: 'Perlcritic'
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   perlcritic:
@@ -26,7 +26,9 @@ jobs:
       - name: Run perlcritic
         run: |
           perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }}
-
+        env:
+          ACTIONS_STEP_DEBUG: true
+    
       - name: Remove problem matcher
         if: always()
         run: echo "::remove-matcher owner=perlcritic::"
