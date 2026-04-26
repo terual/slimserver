@@ -293,7 +293,7 @@ sub shuffleModeSelected {
 	my $alarm = $client->modeParam('alarm_alarm');
 	my $shuffleMode = $item->{params}->{shuffleMode};
 
-	return $alarm->shufflemode == $shuffleMode;
+	return undef;
 }
 
 sub init {
