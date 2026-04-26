@@ -9,13 +9,11 @@ permissions:
 
 jobs:
   linux:
-    name: Running lint on Slim/ folder...
+    name: Running Perlcritic...
     runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0 
           
       - name: Install dependencies
         if: ${{ !env.ACT }}
@@ -24,24 +22,13 @@ jobs:
           packages: libperl-critic-perl libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
-      - name: Get changed files
-        id: files
-        run: |
-          # Bepaal de target branch (bijv. public/9.2)
-          TARGET_BRANCH=${{ github.base_ref }}
-          
-          # Haal alleen die specifieke branch binnen
-          git fetch origin $TARGET_BRANCH --depth=1
-
-          # Gebruik de tweepunts-notatie (..) in plaats van de driepunts (...)
-          # Dit vergelijkt de huidige staat direct met de target branch
-          CHANGED=$(git diff --name-only origin/$TARGET_BRANCH..HEAD | grep -E '\.(pm|pl)$' | xargs || true)
-          
-          echo "files=$CHANGED" >> $GITHUB_OUTPUT
-          
       - name: Register problem matcher
         run: echo "::add-matcher::.github/perlcritic-matcher.json"
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+          
       - name: Run perlcritic
-        run: perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.files.outputs.changed_files }} || [ $? -eq 2 ]
+        run: perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
 
