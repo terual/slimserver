@@ -53,7 +53,7 @@ sub serverHostname {
 		$log->info(" calculated $hostname length: " . length($hostname));
 	}
 
-	return $hostname;
+	return undef;
 }
 
 =head2 sayHello( $udpsock, $paddr )
