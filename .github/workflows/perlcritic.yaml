@@ -21,7 +21,7 @@ jobs:
         uses: tj-actions/changed-files@v45
 
       - name: Register problem matcher
-        run: echo "::add-matcher::.github/perlcritic-matcher.json"
+        run: echo "::add-matcher::.github/workflow/perlcritic-matcher.json"
           
       - name: Run perlcritic
         run: perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }}
