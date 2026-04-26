@@ -22,13 +22,16 @@ jobs:
           packages: libperl-critic-perl libio-socket-ssl-perl libnet-ssleay-perl netcat-traditional
           version: 1
 
-      - name: Register problem matcher
-        run: echo "::add-matcher::.github/perlcritic-matcher.json"
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v45
+
+      - name: Register problem matcher
+        run: echo "::add-matcher::.github/perlcritic-matcher.json"
           
       - name: Run perlcritic
-        run: perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
+        run: |
+          perlcritic --severity 5 --nocolor --verbose "%f:%l:%c: %s: %m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
 
+      - name: Remove problem matcher
+        run: echo "::remove-matcher owner=perlcritic::"
