@@ -75,7 +75,7 @@ sub startScan {
 
 	Slim::Music::Import->endImporter($class);
 
-	return $changes;
+	return undef;
 }
 
 =head1 SEE ALSO
