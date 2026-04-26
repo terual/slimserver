@@ -31,7 +31,7 @@ jobs:
           
       - name: Run perlcritic
         run: |
-          perlcritic --severity 5 --nocolor --verbose "%f:%l:%c: %s: %m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
+          perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }} || [ $? -eq 2 ]
 
       - name: Remove problem matcher
         run: echo "::remove-matcher owner=perlcritic::"
