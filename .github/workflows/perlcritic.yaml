@@ -34,4 +34,5 @@ jobs:
           perlcritic --severity 5 --nocolor --verbose "%f:%l:%c:%m\n" ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Remove problem matcher
+        if: always()
         run: echo "::remove-matcher owner=perlcritic::"
