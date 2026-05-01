@@ -136,7 +136,7 @@ sub idle {
 
 	}
 
-	return 1;
+	return undef;
 }
 
 sub forgetQueuedIR {
