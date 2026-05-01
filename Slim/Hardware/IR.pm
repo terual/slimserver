@@ -451,7 +451,7 @@ sub lookupCodeBytes {
 
 	main::INFOLOG && $log->info("$irCodeBytes -> unknown");
 
-	return undef;
+	return 0;
 }
 
 # Look up an IR code by hex value for enabled remotes, then look up the function for the current
