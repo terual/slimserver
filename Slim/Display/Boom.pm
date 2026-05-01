@@ -157,12 +157,13 @@ sub modes {
 	return \@modes;
 }
 
-sub nmodes {
-	return $#modes;
-}
 
 sub vfdmodel {
 	return 'graphic-160x32';
+}
+
+sub nmodes {
+	return $#modes;
 }
 
 sub string {
