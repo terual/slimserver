@@ -364,7 +364,7 @@ sub infoYear {
 		};
 	}
 
-	return $item;
+	return undef;
 }
 
 sub infoAlbum {
